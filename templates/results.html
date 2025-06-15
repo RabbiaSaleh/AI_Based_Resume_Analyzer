@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Inline styles for quick layout, uses your color/font system */
+        body {
+            background: #f7f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        h1 {
+            margin-top: 2rem;
+            color: #222;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .results-container {
+            display: flex;
+            gap: 3.5rem;
+            align-items: flex-start; /* Align sections at the top */
+            justify-content: center;
+            margin: 2.5rem 0;
+            flex-wrap: nowrap;
+        }
+        .pdf-preview-section,
+        .analysis-section {
+            flex: 1 1 1000px;
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+            /* Remove/minimize top padding for alignment */
+            padding: 1.8rem 2.5rem 2.8rem 2.5rem;
+            min-height: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-sizing: border-box;
+            margin-top: 0; /* Ensure no extra top margin */
+        }
+        .pdf-preview-section {
+            align-items: center;
+            justify-content: flex-start;
+            /* Remove default margin-top from h3 */
+        }
+        .pdf-preview-section h3,
+        .analysis-section h3 {
+            margin-top: 0; /* Remove top margin for headings */
+        }
+        .analysis-section {
+            overflow-x: auto;
+            word-break: break-word;
+            justify-content: flex-start;
+            font-size: 1.18rem;
+        }
+        .analysis-section h2, .analysis-section h3, .analysis-section h4 {
+            margin-top: 1.2rem;
+            margin-bottom: 0.7rem;
+            color: #1a237e;
+        }
+        .analysis-section .summary, .analysis-section .experience, .analysis-section .skills {
+            white-space: pre-line;
+            word-break: break-word;
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+        }
+        .analysis-section .skills-list {
+            background: #e8eaf6;
+            color: #3949ab;
+            border-radius: 4px;
+            padding: 0.3em 0.8em;
+            font-size: 0.98em;
+            display: inline;
+            margin: 0;
+        }
+        .analysis-section .info-row {
+            margin-bottom: 0.7em;
+        }
+        .analysis-section .keywords {
+            color: #3949ab;
+            font-weight: 500;
+            background: #e8eaf6;
+            border-radius: 4px;
+            padding: 0.2em 0.6em;
+        }
+        @media (max-width: 1800px) {
+            .pdf-preview-section, .analysis-section {
+                max-width: 900px;
+            }
+        }
+        @media (max-width: 1400px) {
+            .pdf-preview-section, .analysis-section {
+                max-width: 100%;
+                padding: 1.5rem 1rem;
+            }
+            .results-container {
+                gap: 1.5rem;
+            }
+        }
+        @media (max-width: 1200px) {
+            .results-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 2rem;
+            }
+            .pdf-preview-section, .analysis-section {
+                max-width: 100%;
+                min-height: 400px;
+                padding: 1.2rem 0.7rem;
+            }
+        }
+        @media (max-width: 900px) {
+            .results-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pdf-preview-section, .analysis-section {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 600px) {
+            .pdf-preview-section, .analysis-section {
+                padding: 1rem;
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="section-title" style="margin-top:2rem;">Resume Analysis Results</h1>
+        <div class="results-container">
+            <div class="pdf-preview-section">
+                <h3 style="font-size:1.2rem; color:#4f8cff; margin-bottom:1rem;">Resume PDF</h3>
+                <!-- Adjust width/height for PDF viewer -->
+                <iframe src="{{ url_for('serve_file', filename=filename) }}" width="100%" height="800px" style="border: none; border-radius: 8px;"></iframe>
+            </div>
+            <div class="analysis-section">
+                <h3 style="font-size:1.2rem;">Analysis</h3>
+                <div class="info-row"><b>Name:</b> {{ parsed.name }}</div>
+                <div class="info-row"><b>Contact:</b> {{ parsed.contact }}</div>
+                <div class="info-row"><b>Category:</b> {{ category }}</div>
+                <div class="info-row"><b>Confidence:</b> {{ '%.1f' % confidence }}%</div>
+                <div class="info-row"><b>Top Keywords:</b> <span class="keywords">{{ keywords|join(', ') }}</span></div>
+                <h4 style="margin-bottom:0.3em;">Summary</h4>
+                <div class="summary">{{ parsed.summary }}</div>
+                <h4 style="margin-bottom:0.3em;">Experience</h4>
+                <div class="experience">{{ parsed.experience }}</div>
+                <h4 style="margin-bottom:0.3em;">Skills</h4>
+                <div class="skills" style="margin-bottom:0;">{{ parsed.skills }}</div>
+                <!-- Download ATS Report Button -->
+                <div style="margin-top:2.2rem;">
+                    <button id="downloadReportBtn" class="btn-primary" style="font-size:1.08rem; padding:0.7rem 2.2rem;">
+                        Download ATS Report (PDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+function triggerDownload() {
+    fetch('/download_report', {method: 'GET'})
+        .then(function(resp) {
+            if (resp.status === 200) {
+                var disposition = resp.headers.get('Content-Disposition');
+                var filename = "ATS_Report.pdf";
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    filename = disposition.split('filename=')[1].replace(/["']/g, "");
+                }
+                return resp.blob().then(function(blob) {
+                    var url = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(function() {
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    }, 100);
+                });
+            } else {
+                alert("An error occurred while trying to download the report.");
+            }
+        })
+        .catch(function(err) {
+            alert("Network error or server not reachable.");
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var downloadBtn = document.getElementById('downloadReportBtn');
+    if (downloadBtn) {
+        downloadBtn.onclick = function(e) {
+            e.preventDefault();
+            // Show signup modal instead of login modal
+            var signupModal = document.getElementById('signupModal');
+            if (signupModal) signupModal.style.display = 'flex';
+        };
+    }
+
+    // AJAX signup logic for modal
+    var signupForm = document.getElementById('signupForm');
+    var passwordInput = document.getElementById('signup-password');
+    var confirmInput = document.getElementById('signup-confirm');
+    var passwordReq = document.getElementById('passwordReq');
+    var signupError = document.createElement('div');
+    signupError.id = "signupError";
+    signupError.style = "color:#ffb300; margin-bottom:0.7rem; text-align:center;";
+    // Insert error div before the signup button if not already present
+    if (signupForm && !document.getElementById('signupError')) {
+        var btn = signupForm.querySelector('.signup-btn');
+        if (btn) btn.parentNode.insertBefore(signupError, btn);
+    }
+
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(e) {
+            // Password validation (already handled above, but keep for safety)
+            var pw = passwordInput.value;
+            var cpw = confirmInput.value;
+            if (!pw || pw.length > 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(pw) || !/\d/.test(pw)) {
+                passwordReq.style.color = "#ffb300";
+                signupError.textContent = "Password must be ≤ 8 characters, include a number and a special character.";
+                e.preventDefault();
+                return;
+            }
+            if (pw !== cpw) {
+                passwordReq.textContent = "Passwords do not match.";
+                passwordReq.style.color = "#ffb300";
+                signupError.textContent = "Passwords do not match.";
+                e.preventDefault();
+                return;
+            }
+            // AJAX signup
+            e.preventDefault();
+            signupError.textContent = '';
+            var formData = new FormData(signupForm);
+            formData.append('ajax', '1');
+            fetch('/signup', {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(function(resp) {
+                return resp.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    // Hide modal
+                    var signupModal = document.getElementById('signupModal');
+                    if (signupModal) signupModal.style.display = 'none';
+                    // Trigger download
+                    triggerDownload();
+                } else {
+                    signupError.textContent = data.message || "Signup failed. Please try again.";
+                }
+            })
+            .catch(function() {
+                signupError.textContent = "Network error. Please try again.";
+            });
+        });
+    }
+
+    // AJAX login logic for modal
+    var loginForm = document.getElementById('loginForm');
+    var loginError = document.getElementById('loginError');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loginError.textContent = '';
+            var formData = new FormData(loginForm);
+            fetch('/login', {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(function(resp) {
+                return resp.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    // Hide modal
+                    var loginModal = document.getElementById('loginModal');
+                    if (loginModal) loginModal.style.display = 'none';
+                    // Trigger download
+                    triggerDownload();
+                } else {
+                    loginError.textContent = data.message || "Login failed. Please try again.";
+                }
+            })
+            .catch(function() {
+                loginError.textContent = "Network error. Please try again.";
+            });
+        });
+    }
+});
+</script>
+{% if session.get('user') %}
+<script>window.isLoggedIn = true;</script>
+{% else %}
+<script>window.isLoggedIn = false;</script>
+{% endif %}
+</body>
+</html>
+
+<!-- Add login/signup modals and JS listener if not present (for standalone testing) -->
+<div id="loginModal" class="modal" style="display:none;">
+    <div class="modal-content login-modal-content">
+        <span class="close" id="closeLogin">&times;</span>
+        <h2 class="modal-title">USER LOGIN</h2>
+        <form method="POST" action="/login" class="login-form" id="loginForm">
+            <div class="input-group">
+                <span class="input-icon"><i class="fas fa-user"></i></span>
+                <input type="email" id="login-email" name="email" required placeholder="Username">
+            </div>
+            <div class="input-group">
+                <input type="password" id="login-password" name="password" required placeholder="Password">
+                <span class="input-icon right"><i class="fas fa-lock"></i></span>
+            </div>
+            <input type="hidden" name="ajax" value="1">
+            <div id="loginError" style="color:#ffb300; margin-bottom:0.7rem; text-align:center;"></div>
+            <button type="submit" class="cta-btn login-btn" id="loginSubmitBtn">LOGIN</button>
+        </form>
+    </div>
+</div>
+<div id="signupModal" class="modal" style="display:none;">
+    <div class="modal-content signup-modal-content">
+        <span class="close" id="closeSignup">&times;</span>
+        <h2 class="modal-title">Sign Up</h2>
+        <p class="modal-subtitle">Please fill in this form to create an account!</p>
+        <form method="POST" action="/signup" class="signup-form" id="signupForm">
+            <div class="signup-row">
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+            </div>
+            <input type="email" name="email" id="signup-email" placeholder="Email" required>
+            <input type="password" name="password" id="signup-password" placeholder="Password" required>
+            <input type="password" name="confirm_password" id="signup-confirm" placeholder="Confirm Password" required>
+            <div class="password-requirements" id="passwordReq">
+                <small>Password must be ≤ 8 characters, include a number and a special character.</small>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">I accept the <a href="#">Terms of Use</a> &amp; <a href="#">Privacy Policy</a>.</label>
+            </div>
+            <button type="submit" class="cta-btn signup-btn">Sign Up</button>
+        </form>
+        <div class="signup-footer">
+            Already have an account? <a href="#" id="switchToLogin">Login here.</a>
+        </div>
+    </div>
+</div>
+<script>
+    // Modal logic for standalone results.html
+    document.addEventListener('DOMContentLoaded', function() {
+        function showModal(id) {
+            var modal = document.getElementById(id);
+            if (modal) modal.style.display = 'flex';
+        }
+        function hideModal(id) {
+            var modal = document.getElementById(id);
+            if (modal) modal.style.display = 'none';
+        }
+        var closeLogin = document.getElementById('closeLogin');
+        var closeSignup = document.getElementById('closeSignup');
+        var switchToLogin = document.getElementById('switchToLogin');
+        if (closeLogin) closeLogin.onclick = function() { hideModal('loginModal'); };
+        if (closeSignup) closeSignup.onclick = function() { hideModal('signupModal'); };
+        if (switchToLogin) switchToLogin.onclick = function(e) {
+            e.preventDefault();
+            hideModal('signupModal');
+            showModal('loginModal');
+        };
+        window.onclick = function(event) {
+            var loginModal = document.getElementById('loginModal');
+            var signupModal = document.getElementById('signupModal');
+            if (event.target === loginModal) loginModal.style.display = "none";
+            if (event.target === signupModal) signupModal.style.display = "none";
+        };
+        // Listen for message from self (for standalone) or parent (if embedded)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.action === "showLoginOrSignupModal") {
+                var signupModal = document.getElementById('signupModal');
+                var loginModal = document.getElementById('loginModal');
+                if (signupModal) {
+                    signupModal.style.display = 'flex';
+                    var input = signupModal.querySelector('input[type="email"],input[type="text"]');
+                    if (input) setTimeout(function(){ input.focus(); }, 100);
+                } else if (loginModal) {
+                    loginModal.style.display = 'flex';
+                    var input = loginModal.querySelector('input[type="email"],input[type="text"]');
+                    if (input) setTimeout(function(){ input.focus(); }, 100);
+                }
+            }
+        });
+    });
+    </script>

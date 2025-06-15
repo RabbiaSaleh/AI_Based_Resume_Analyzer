@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <nav>
+    <div class="container">
+        <div class="logo">ResumeMaker</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#templates">Template</a></li>
+            <li><a href="#upload">Analyzer</a></li>
+            <li><a href="#testimonials">Example</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="#login" class="btn-outline" id="loginBtn">Log In</a>
+            <a href="#signup" class="btn-primary" id="signupBtn">Sign Up Free</a>
+        </div>
+        <div class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+<header id="home">
+    <div class="container">
+        <div class="header-content">
+            <h1>
+                Analyze your resume with AI and get hired faster
+            </h1>
+            <p class="subtitle">
+                Use our resume maker with advanced creation tools to tell a professional story that engages recruiters, hiring managers and even CEOs.
+            </p>
+            <a href="#upload" class="cta-btn">
+                ANALYZE YOUR RESUME NOW <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="header-image">
+            <img src="{{ url_for('static', filename='images/cv-banner.png') }}" alt="Resume Example" loading="lazy">
+        </div>
+    </div>
+</header>
+
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">How our resume builder works</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>1. Upload your resume</h3>
+                    <p>Start with an existing resume or build from scratch. We support PDF, DOCX, and TXT formats.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>2. AI-powered suggestions</h3>
+                    <p>Our AI analyzes your content and suggests improvements to make your resume stand out.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>3. Customize design</h3>
+                    <p>Choose from professionally designed templates and customize colors, fonts, and layouts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <h3>4. Download & apply</h3>
+                    <p>Download your polished resume in multiple formats and start applying for jobs with confidence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="templates" class="templates-section">
+        <div class="container">
+            <h2 class="section-title">Professional Resume Templates</h2>
+            <p class="section-subtitle">Choose from our collection of expertly designed templates that get you hired faster</p>
+            
+            <div class="templates-grid">
+                <div class="template-card">
+                    <div class="template-preview">
+                        <img src="{{ url_for('static', filename='images/cv4.jpg') }}" alt="Modern Template">
+                    </div>
+                    <h3>Modern</h3>
+                    <div class="template-tags">
+                        <span>ATS Friendly</span>
+                        <span>Creative</span>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-preview">
+                        <img src="{{ url_for('static', filename='images/cv5.jpg') }}" alt="Professional Template">
+                    </div>
+                    <h3>Professional</h3>
+                    <div class="template-tags">
+                        <span>ATS Friendly</span>
+                        <span>Corporate</span>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-preview">
+                        <img src="{{ url_for('static', filename='images/cv3.jpg') }}" alt="Minimalist Template">
+                    </div>
+                    <h3>Minimalist</h3>
+                    <div class="template-tags">
+                        <span>Clean</span>
+                        <span>Simple</span>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-preview">
+                        <img src="{{ url_for('static', filename='images/cv2.jpg') }}" alt="Executive Template">
+                    </div>
+                    <h3>Executive</h3>
+                    <div class="template-tags">
+                        <span>ATS Friendly</span>
+                        <span>Leadership</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-cta">
+                <a href="#templates" class="btn-outline">View All Templates <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+<section id="upload" class="upload-section" >
+    <div class="container">
+        <div class="upload-content">
+            <h2 class="section-title">Already have a resume? Let's make it better</h2>
+            <p class="section-subtitle">Upload your existing resume and our AI will analyze it for improvements</p>
+            
+            <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data" style="text-align:center; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:2rem; max-width:400px; margin:0 auto;">
+                <label for="fileElem" id="fileLabel" style="display:block; font-size:1.1rem; color:#333; margin-bottom:1rem; cursor:pointer;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:#4f8cff;"></i>
+                    <h3 style="margin:0.5rem 0 0.2rem 0; font-weight:500;">Drag & Drop your resume here</h3>
+                    <p style="margin:0.2rem 0 0.2rem 0;">or <span class="browse-btn" style="color:#4f8cff; text-decoration:underline; cursor:pointer;">Upload</span></p>
+                    <p class="file-types" style="color:#888; font-size:0.95rem;">Supported formats: PDF, DOCX, TXT</p>
+                    <input type="file" id="fileElem" name="file" accept=".pdf,.docx,.txt" required style="display:none;">
+                </label>
+                <div id="fileList" style="margin-bottom:1rem;"></div>
+                <button type="submit" class="cta-btn" style="font-size:1rem; padding:0.7rem 2.2rem;">Analyze</button>
+            </form>
+            <div id="uploadStatus" style="text-align:center; margin-top:1rem; color:#43a047; font-weight:600;"></div>
+        </div>
+    </div>
+</section>
+
+    <section class="testimonials-section" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What our users say</h2>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"I got 3 interviews in the first week after using this resume builder. The AI suggestions really helped me highlight my skills better."</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/user1.jpg') }}" alt="Sarah J.">
+                        <div>
+                            <h4>Rabbia Saleh</h4>
+                            <p>Senior Developer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"The templates are professional and easy to customize. I landed my dream job after using the executive template."</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/user2.jpg') }}" alt="Michael T.">
+                        <div>
+                            <h4>Samad</h4>
+                            <p>Marketing Manager</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-text">"As a recent graduate, I didn't know how to write a good resume. The step-by-step builder made it so simple!"</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/user3.jpg') }}" alt="David L.">
+                        <div>
+                            <h4>Kashaf</h4>
+                            <p>Recent Graduate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>ResumeBuilderPro</h3>
+                    <p>Making job search easier with AI-powered resume tools.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Resume Builder</a></li>
+                        <li><a href="#">Templates</a></li>
+                        <li><a href="#">Cover Letters</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li><a href="#">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Career Advice</a></li>
+                        <li><a href="#">Resume Tips</a></li>
+                        <li><a href="#">Interview Tips</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rabbia Saleh. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+<div id="loginModal" class="modal" style="display:none;">
+    <div class="modal-content login-modal-content">
+        <span class="close" id="closeLogin">&times;</span>
+        <h2 class="modal-title">USER LOGIN</h2>
+        <form method="POST" action="/login" class="login-form" id="loginForm">
+            <div class="input-group">
+                <span class="input-icon"><i class="fas fa-user"></i></span>
+                <input type="email" id="login-email" name="email" required placeholder="Username">
+            </div>
+            <div class="input-group">
+                <input type="password" id="login-password" name="password" required placeholder="Password">
+                <span class="input-icon right"><i class="fas fa-lock"></i></span>
+            </div>
+            <input type="hidden" name="ajax" value="1">
+            <div id="loginError" style="color:#ffb300; margin-bottom:0.7rem; text-align:center;"></div>
+            <button type="submit" class="cta-btn login-btn" id="loginSubmitBtn">LOGIN</button>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal" style="display:none;">
+    <div class="modal-content signup-modal-content">
+        <span class="close" id="closeSignup">&times;</span>
+        <h2 class="modal-title">Sign Up</h2>
+        <p class="modal-subtitle">Please fill in this form to create an account!</p>
+        <form method="POST" action="/signup" class="signup-form" id="signupForm">
+            <div class="signup-row">
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+            </div>
+            <input type="email" name="email" id="signup-email" placeholder="Email" required>
+            <input type="password" name="password" id="signup-password" placeholder="Password" required>
+            <input type="password" name="confirm_password" id="signup-confirm" placeholder="Confirm Password" required>
+            <div class="password-requirements" id="passwordReq">
+                <small>Password must be ≤ 8 characters, include a number and a special character.</small>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">I accept the <a href="#">Terms of Use</a> &amp; <a href="#">Privacy Policy</a>.</label>
+            </div>
+            <button type="submit" class="cta-btn signup-btn">Sign Up</button>
+        </form>
+        <div class="signup-footer">
+            Already have an account? <a href="#" id="switchToLogin">Login here.</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Styles -->
+<style>
+/* ...existing code... */
+.modal {
+    position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
+}
+.modal-content {
+    background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 2.5rem 2rem 2rem 2rem; width: 95%; max-width: 400px; position: relative;
+    display: flex; flex-direction: column; align-items: center;
+}
+.login-modal-content {
+    background: linear-gradient(135deg, #00333a 60%, #0a2b3c 100%);
+    color: #fff;
+}
+.signup-modal-content {
+    background: #1a72bb;
+    color: #fff;
+}
+.close {
+    position: absolute; right: 1.2rem; top: 1.2rem; font-size: 1.7rem; cursor: pointer; color: #fff;
+}
+.modal-title {
+    font-size: 2rem; font-weight: bold; margin-bottom: 2rem; text-align: center; letter-spacing: 1px;
+}
+.modal-subtitle {
+    color: #e3f2fd; margin-bottom: 1.5rem; text-align: center;
+}
+.login-form .input-group, .signup-form .signup-row {
+    display: flex; align-items: center; margin-bottom: 1.2rem;
+}
+.login-form .input-group {
+    background: rgba(20, 76, 86, 0.836); border-radius: 30px; padding: 0.5rem 1rem;
+}
+.input-group input {
+    border: none; background: transparent; color: #fff; font-size: 1rem; flex: 1;
+    padding: 0.7rem 0.7rem 0.7rem 0.7rem; outline: none;
+}
+.input-group .input-icon {
+    font-size: 1.3rem; color: #fff; margin-right: 0.7rem;
+}
+.input-group .input-icon.right {
+    margin-left: 0.7rem; margin-right: 0;
+}
+.login-btn {
+    width: 100%; margin-top: 1.5rem; border-radius: 30px; font-size: 1.1rem; background: #fff; color: #00333a;
+    font-weight: bold; letter-spacing: 1px;
+}
+.signup-form input[type="text"], .signup-form input[type="email"], .signup-form input[type="password"] {
+    width: 100%; padding: 0.7rem; border-radius: 6px; border: none; margin-bottom: 1rem; font-size: 1rem;
+}
+.signup-form .signup-row {
+    gap: 1rem;
+}
+.signup-btn {
+    width: 100%; margin-top: 1rem; border-radius: 6px; font-size: 1.1rem; background: #fff; color: #2196f3;
+    font-weight: bold; letter-spacing: 1px;
+}
+.password-requirements {
+    color: #fffde7; font-size: 0.95rem; margin-bottom: 0.7rem; margin-top: -0.7rem;
+}
+.checkbox-row {
+    display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.95rem;
+}
+.signup-footer {
+    margin-top: 1.2rem; text-align: center; color: #fff;
+}
+.signup-footer a { color: #fff; text-decoration: underline; }
+@media (max-width: 600px) {
+    .modal-content { padding: 1.2rem; }
+    .modal-title { font-size: 1.3rem; }
+}
+</style>
+
+<!-- Modal Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal logic
+    function showModal(id) {
+        var modal = document.getElementById(id);
+        if (modal) modal.style.display = 'flex';
+    }
+    function hideModal(id) {
+        var modal = document.getElementById(id);
+        if (modal) modal.style.display = 'none';
+    }
+
+    var loginBtn = document.getElementById('loginBtn');
+    var signupBtn = document.getElementById('signupBtn');
+    var closeLogin = document.getElementById('closeLogin');
+    var closeSignup = document.getElementById('closeSignup');
+    var switchToLogin = document.getElementById('switchToLogin');
+
+    if (loginBtn) {
+        loginBtn.onclick = function(e) {
+            e.preventDefault();
+            showModal('loginModal');
+        };
+    }
+    if (signupBtn) {
+        signupBtn.onclick = function(e) {
+            e.preventDefault();
+            showModal('signupModal');
+        };
+    }
+    if (closeLogin) {
+        closeLogin.onclick = function() { hideModal('loginModal'); };
+    }
+    if (closeSignup) {
+        closeSignup.onclick = function() { hideModal('signupModal'); };
+    }
+    if (switchToLogin) {
+        switchToLogin.onclick = function(e) {
+            e.preventDefault();
+            hideModal('signupModal');
+            showModal('loginModal');
+        };
+    }
+
+    // Hide modal on outside click
+    window.onclick = function(event) {
+        var loginModal = document.getElementById('loginModal');
+        var signupModal = document.getElementById('signupModal');
+        if (event.target === loginModal) loginModal.style.display = "none";
+        if (event.target === signupModal) signupModal.style.display = "none";
+    };
+
+    // Password validation for signup
+    var signupForm = document.getElementById('signupForm');
+    var passwordInput = document.getElementById('signup-password');
+    var confirmInput = document.getElementById('signup-confirm');
+    var passwordReq = document.getElementById('passwordReq');
+
+    function validatePassword(pw) {
+        // ≤ 8 chars, at least 1 special char, at least 1 number
+        return pw && pw.length <= 8 && /[!@#$%^&*(),.?":{}|<>]/.test(pw) && /\d/.test(pw);
+    }
+
+    if (signupForm && passwordInput && confirmInput && passwordReq) {
+        signupForm.addEventListener('submit', function(e) {
+            var pw = passwordInput.value;
+            var cpw = confirmInput.value;
+            if (!validatePassword(pw)) {
+                passwordReq.style.color = "#ffb300";
+                e.preventDefault();
+            } else if (pw !== cpw) {
+                passwordReq.textContent = "Passwords do not match.";
+                passwordReq.style.color = "#ffb300";
+                e.preventDefault();
+            } else {
+                passwordReq.style.color = "#fffde7";
+                passwordReq.textContent = "Password must be ≤ 8 characters, include a number and a special character.";
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            if (validatePassword(passwordInput.value)) {
+                passwordReq.style.color = "#b2ff59";
+                passwordReq.textContent = "Password looks good!";
+            } else {
+                passwordReq.style.color = "#fffde7";
+                passwordReq.textContent = "Password must be ≤ 8 characters, include a number and a special character.";
+            }
+        });
+    }
+
+    // --- AJAX login logic for modal ---
+    var loginForm = document.getElementById('loginForm');
+    var loginError = document.getElementById('loginError');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loginError.textContent = '';
+            var formData = new FormData(loginForm);
+            fetch('/login', {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(function(resp) {
+                return resp.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    window.isLoggedIn = true;
+                    // Hide modal
+                    var loginModal = document.getElementById('loginModal');
+                    if (loginModal) loginModal.style.display = 'none';
+                    // If download was pending, trigger it
+                    if (window.sessionStorage && sessionStorage.getItem('triggerDownload') === '1') {
+                        sessionStorage.removeItem('triggerDownload');
+                        window.parent.postMessage({action: "triggerDownloadAfterLogin"}, "*");
+                    }
+                } else {
+                    loginError.textContent = data.message || "Login failed. Please try again.";
+                }
+            })
+            .catch(function() {
+                loginError.textContent = "Network error. Please try again.";
+            });
+        });
+    }
+
+    // Listen for triggerDownloadAfterLogin from child iframe
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.action === "triggerDownloadAfterLogin") {
+            // Forward to iframe if present
+            var iframe = document.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({action: "triggerDownloadAfterLogin"}, "*");
+            }
+        }
+    });
+
+    // Listen for message from results.html to open login/signup modal
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.action === "showLoginOrSignupModal") {
+            // Prefer signup modal, fallback to login modal
+            var signupModal = document.getElementById('signupModal');
+            var loginModal = document.getElementById('loginModal');
+            if (signupModal) {
+                signupModal.style.display = 'flex';
+                var input = signupModal.querySelector('input[type="email"],input[type="text"]');
+                if (input) setTimeout(function(){ input.focus(); }, 100);
+            } else if (loginModal) {
+                loginModal.style.display = 'flex';
+                var input = loginModal.querySelector('input[type="email"],input[type="text"]');
+                if (input) setTimeout(function(){ input.focus(); }, 100);
+            }
+        }
+    });
+});
+</script>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
